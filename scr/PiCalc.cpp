@@ -1,5 +1,5 @@
-#include "../include/LongNum.h"
-namespace LongNum
+#include "../includes/LongNum.h"
+namespace MyLongNum
 {
     // 1 / 16^i * (4 / (8i + 1) - 2 / (8i + 4) - 1 / (8i + 5) - (1 / (8i + 6)) 
     LongNum PiCalc(int precision) {

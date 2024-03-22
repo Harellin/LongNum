@@ -1,21 +1,17 @@
 cmake_minimum_required(VERSION 3.14)
-project(LongNumCmake VERSION 0.1.0 LANGUAGES C CXX)
-project(LongNum_Cmake)
-
-include_directories("include/")
-
-set(SOURCE_EXE main.cpp)
-set(SOURCE_LIB scr/LongNum.cpp scr/PiCalc.cpp)
-
-add_library(LongNum ${SOURCE_LIB} include/LongNum.h)
-
-add_executable(main ${SOURCE_EXE})
-target_link_libraries(main LongNum)
-
-add_compile_options("-O2")
-
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(LongNum VERSION 0.1.0 LANGUAGES C CXX)
+
+include_directories("includes/")
+
+
+add_library(LongNum INTERFACE scr/LongNum.cpp scr/PiCalc.cpp includes/LongNum.h)
+
+add_executable(main main.cpp)
+target_link_libraries(main LongNum)
+target_include_directories(main PUBLIC "includes" "scr")
+enable_testing()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -26,9 +22,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-enable_testing()
-
-add_executable(tests test/tests.cpp)
+add_executable(tests test/test.cpp)
 target_link_libraries(tests LongNum GTest::gtest_main)
 
 include(GoogleTest)

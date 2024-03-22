@@ -1,363 +1,286 @@
 #include <gtest/gtest.h>
 #include <exception>
 #include <string>
-#include "longnum.h"
-using namespace LongNumLib;
+#include "../includes/LongNum.h"
 
-TEST(AdditionOperationTest, PositiveNumbers) {
-LongNum first, second, ans;
-first = 15.005_LN;
-second = 15.005_LN;
-ans = 30.01_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+using namespace MyLongNum;
 
-first = 105.0005_LN;
-second = 15.005_LN;
-ans = 120.0055_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+TEST(AddOperation, PosNumbers) {
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = 1.01_LN;
+second = 1.01_LN;
+ans = 2.02_LN;
+EXPECT_EQ((first + second).ToString(), ans.ToString()) << (first + second).ToString();
 
-first = 25.5_LN;
-second = 15.535_LN;
-ans = 41.035_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+first = 2.5_LN;
+second = 2.535_LN;
+ans = 5.035_LN;
+EXPECT_EQ((first + second).ToString(), ans.ToString()) << (first + second).ToString();
 
 }
 
-TEST(AdditionOperationTest, NegativeNumbers) {
-LongNum first, second, ans;
-first = -15.005_LN;
-second = -15.005_LN;
-ans = -30.01_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+TEST(AddOperation, NegNumbers) {
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = -1.01_LN;
+second = -1.01_LN;
+ans = -2.02_LN;
+EXPECT_EQ((first + second).ToString(), ans.ToString()) << (first + second).ToString();
 
-first = -105.0005_LN;
-second = -15.005_LN;
-ans = -120.0055_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
-
-first = -25.5_LN;
-second = -15.535_LN;
-ans = -41.035_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+first = -2.5_LN;
+second = -2.535_LN;
+ans = -5.035_LN;
+EXPECT_EQ((first + second).ToString(), ans.ToString()) << (first + second).ToString();
 }
 
-TEST(AdditionOperationTest, DifSignNumbers) {
-LongNum first, second, ans;
-first = -15.005_LN;
-second = 15.005_LN;
+TEST(AddOperation, DifSignNumbers) {
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = -1.01_LN;
+second = 1.01_LN;
 ans = 0_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+EXPECT_EQ((first + second).ToString(), ans.ToString()) << (first + second).ToString();
 
-first = 105.0005_LN;
-second = -15.005_LN;
-ans = 89.9955_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+first = 10.0005_LN;
+second = -1.01_LN;
+ans = 8.995_LN;
+EXPECT_EQ((first + second).ToString(), ans.ToString()) << (first + second).ToString();
 
-first = -25.5_LN;
-second = 15.535_LN;
-ans = -9.965_LN;
-EXPECT_EQ((first + second).GetLongNum(), ans.GetLongNum()) << (first + second).GetLongNum();
+first = -10.0005_LN;
+second = 1.01_LN;
+ans = -8.995_LN;
+EXPECT_EQ((first + second).ToString(), ans.ToString()) << (first + second).ToString();
 }
 
-TEST(DifferenceOperationTest, PositiveNumbers) {
-LongNum first, second, ans;
-first = 15.005_LN;
-second = 15.005_LN;
+TEST(DiffOperation, PosNumbers) {
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = 1.01_LN;
+second = 1.01_LN;
 ans = 0_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
+EXPECT_EQ((first - second).ToString(), ans.ToString()) << (first - second).ToString();
 
-first = 105.0005_LN;
-second = 15.005_LN;
-ans = 89.9955_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
-
-first = 25.5_LN;
-second = 15.535_LN;
-ans = 9.965_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
-
+first = 10.0005_LN;
+second = 1.01_LN;
+ans = 8.995_LN;
+EXPECT_EQ((first - second).ToString(), ans.ToString()) << (first - second).ToString();
 }
 
-TEST(DifferenceOperationTest, NegativeNumbers) {
-LongNum first, second, ans;
-first = -15.005_LN;
-second = -15.005_LN;
+TEST(DiffOperation, NegativeNumbers) {
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = -1.01_LN;
+second = -1.01_LN;
 ans = 0_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
+EXPECT_EQ((first - second).ToString(), ans.ToString()) << (first - second).ToString();
 
-first = -105.0005_LN;
-second = -15.005_LN;
-ans = -89.9955_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
-
-first = -25.5_LN;
-second = -15.535_LN;
-ans = -9.965_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
-
+first = -10.0005_LN;
+second = -1.01_LN;
+ans = -8.995_LN;
+EXPECT_EQ((first - second).ToString(), ans.ToString()) << (first - second).ToString();
 }
 
-TEST(DifferenceOperationTest, DifSignNumbers) {
-LongNum first, second, ans;
-first = -15.005_LN;
-second = 15.005_LN;
-ans = -30.01_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
+TEST(DiffOperation, DifSignNumbers) {
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = -1.01_LN;
+second = 1.01_LN;
+ans = -2.02_LN;
+EXPECT_EQ((first - second).ToString(), ans.ToString()) << (first - second).ToString();
 
-first = 105.0005_LN;
-second = -15.005_LN;
-ans = 120.0055_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
-
-first = -25.5_LN;
-second = 15.535_LN;
-ans = -41.035_LN;
-EXPECT_EQ((first - second).GetLongNum(), ans.GetLongNum()) << (first - second).GetLongNum();
-
+first = 10.0005_LN;
+second = -1.01_LN;
+ans = 11.0105_LN;
+EXPECT_EQ((first - second).ToString(), ans.ToString()) << (first - second).ToString();
 }
 
 TEST(MulOperationTest, Numbers) {
-LongNum first, second, ans;
-first = 15.005_LN;
-second = 15.005_LN;
-ans = 225.150025_LN;
-EXPECT_EQ((first * second).GetLongNum(), ans.GetLongNum()) << (first * second).GetLongNum();
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = 1.01_LN;
+second = 1.01_LN;
+ans = 1.0201_LN;
+EXPECT_EQ((first * second).ToString(), ans.ToString()) << (first * second).ToString();
 
 first = 105.0005_LN;
 second = 0_LN;
 ans = 0_LN;
-EXPECT_EQ((first * second).GetLongNum(), ans.GetLongNum()) << (first * second).GetLongNum();
+EXPECT_EQ((first * second).ToString(), ans.ToString()) << (first * second).ToString();
 
 first = 0_LN;
 second = 15.535_LN;
 ans = 0_LN;
-EXPECT_EQ((first * second).GetLongNum(), ans.GetLongNum()) << (first * second).GetLongNum();
+EXPECT_EQ((first * second).ToString(), ans.ToString()) << (first * second).ToString();
 
-first = -15.005_LN;
-second = 100.005_LN;
-ans = -1500.575025_LN;
-EXPECT_EQ((first * second).GetLongNum(), ans.GetLongNum()) << (first * second).GetLongNum();
+first = -1.01_LN;
+second = 1.01_LN;
+ans = -1.0201_LN;
+EXPECT_EQ((first * second).ToString(), ans.ToString()) << (first * second).ToString();
 
-first = -15.005_LN;
-second = -100.005_LN;
-ans = 1500.575025_LN;
-EXPECT_EQ((first * second).GetLongNum(), ans.GetLongNum()) << (first * second).GetLongNum();
+first = -1.01_LN;
+second = -1.01_LN;
+ans = 1.0201_LN;
+EXPECT_EQ((first * second).ToString(), ans.ToString()) << (first * second).ToString();
 
 }
 
 TEST(DivOperationTest, Numbers) {
-LongNum first, second, ans;
-first = 15.005_LN;
-second = 15.005_LN;
+LongNum first(nullptr), second(nullptr), ans(nullptr);
+first = 1.01_LN;
+second = 1.01_LN;
 ans = 1_LN;
-EXPECT_EQ((first / second).GetLongNum(), ans.GetLongNum()) << (first / second).GetLongNum();
+EXPECT_EQ((first / second).ToString(), ans.ToString()) << (first / second).ToString();
 
-first = 105.0005_LN;
+first = 1.01_LN;
 second = 0_LN;
 ans = 0_LN;
-EXPECT_ANY_THROW(first / second) << (first / second).GetLongNum();
+EXPECT_ANY_THROW(first / second) << (first / second).ToString();
 
 first = 0_LN;
-second = 15.535_LN;
+second = 1.01_LN;
 ans = 0_LN;
-EXPECT_EQ((first / second).GetLongNum(), ans.GetLongNum()) << (first / second).GetLongNum();
+EXPECT_EQ((first / second).ToString(), ans.ToString()) << (first / second).ToString();
 
-first = -15.005_LN;
-second = 100.005_LN;
-ans = -0.15_LN;
-EXPECT_EQ((first / second).GetLongNum(), ans.GetLongNum()) << (first / second).GetLongNum();
-
-first = -13_LN;
-second = -7.1_LN;
-ans = 1.83098_LN;
-EXPECT_EQ((first.Div(second, 5)).GetLongNum(), ans.GetLongNum()) << (first * second).GetLongNum();
+first = -1.01_LN;
+second = 100_LN;
+ans = -0.0101_LN;
+EXPECT_EQ((first / second).ToString(), ans.ToString()) << (first / second).ToString();
 
 }
 
-TEST(MinusOperationTest, Numbers) {
-LongNum first;
+TEST(MinusTest, Numbers) {
+LongNum first(nullptr);
 std::string ans;
-first = -15.005_LN;
-ans = "15.005";
-EXPECT_EQ((-first).GetLongNum(), ans) << (-first).GetLongNum();
+first = -1.01_LN;
+ans = "1.01";
+EXPECT_EQ((-first).ToString(), ans) << (-first).ToString();
 
-first = 15.005_LN;
-ans = "-15.005";
-EXPECT_EQ((-first).GetLongNum(), ans) << (-first).GetLongNum();
+first = 1.01_LN;
+ans = "-1.01";
+EXPECT_EQ((-first).ToString(), ans) << (-first).ToString();
 
 first = 0_LN;
 ans = "0";
-EXPECT_EQ((-first).GetLongNum(), ans) << (-first).GetLongNum();
+EXPECT_EQ((-first).ToString(), ans) << (-first).ToString();
 
 first = -0_LN;
 ans = "0";
-EXPECT_EQ((-first).GetLongNum(), ans) << (-first).GetLongNum();
+EXPECT_EQ((-first).ToString(), ans) << (-first).ToString();
 
 }
 
-TEST(LogicOperationTest, Equals) {
-LongNum first, second;
+TEST(LogicTest, Equals) {
+LongNum first(nullptr), second(nullptr);
 bool ans;
-first = 15.005_LN;
-second = 15.005_LN;
+first = 1.01_LN;
+second = 1.01_LN;
 ans = true;
-EXPECT_EQ(first == second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first == second, ans) << first.ToString() << " " << second.ToString();
 
-first = -15.005_LN;
-second = 15.005_LN;
+first = -1.01_LN;
+second = 1.01_LN;
 ans = false;
-EXPECT_EQ(first == second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first == second, ans) << first.ToString() << " " << second.ToString();
 
-first = 15.0050001_LN;
-second = 15.005_LN;
+first = 1.010001_LN;
+second = 1.01_LN;
 ans = false;
-EXPECT_EQ(first == second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = -15.005_LN;
-second = -15.005_LN;
-ans = true;
-EXPECT_EQ(first == second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = 15.005_LN;
-second = 15.00500001_LN;
-ans = false;
-EXPECT_EQ(first == second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first == second, ans) << first.ToString() << " " << second.ToString();
 
 first = 0.000_LN;
 second = 0_LN;
 ans = true;
-EXPECT_EQ(first == second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
+EXPECT_EQ(first == second, ans) << first.ToString() << " " << second.ToString();
 
 first = 0.000_LN;
 second = -0_LN;
 ans = true;
-EXPECT_EQ(first == second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
+EXPECT_EQ(first == second, ans) << first.ToString() << " " << second.ToString();
 }
 
-TEST(LogicOperationTest, NotEquals) {
-LongNum first, second;
+TEST(LogicTest, NotEquals) {
+LongNum first(nullptr), second(nullptr);
 bool ans;
-first = 15.005_LN;
-second = 15.005_LN;
+first = 1.01_LN;
+second = 1.01_LN;
 ans = false;
-EXPECT_EQ(first != second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first != second, ans) << first.ToString() << " " << second.ToString();
 
-first = -15.005_LN;
-second = 15.005_LN;
+first = -1.01_LN;
+second = 1.01_LN;
 ans = true;
-EXPECT_EQ(first != second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first != second, ans) << first.ToString() << " " << second.ToString();
 
-first = 15.0050001_LN;
-second = 15.005_LN;
+first = 1.010001_LN;
+second = 1.01_LN;
 ans = true;
-EXPECT_EQ(first != second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = -15.005_LN;
-second = -15.005_LN;
-ans = false;
-EXPECT_EQ(first != second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = 15.005_LN;
-second = 15.00500001_LN;
-ans = true;
-EXPECT_EQ(first != second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first != second, ans) << first.ToString() << " " << second.ToString();
 
 first = 0.000_LN;
 second = 0_LN;
 ans = false;
-EXPECT_EQ(first != second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first != second, ans) << first.ToString() << " " << second.ToString();
 
 first = 0.000_LN;
 second = -0_LN;
 ans = false;
-EXPECT_EQ(first != second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
+EXPECT_EQ(first != second, ans) << first.ToString() << " " << second.ToString();
 }
 
-TEST(LogicOperationTest, More) {
-LongNum first, second;
+TEST(LogicTest, More) {
+LongNum first(nullptr), second(nullptr);
 bool ans;
-first = 15.005_LN;
-second = 15.005_LN;
+first = 1.01_LN;
+second = 1.01_LN;
 ans = false;
-EXPECT_EQ(first > second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first > second, ans) << first.ToString() << " " << second.ToString();
 
-first = 150.005_LN;
-second = 15.005_LN;
+first = 1.01001_LN;
+second = 1.01_LN;
 ans = true;
-EXPECT_EQ(first > second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first > second, ans) << first.ToString() << " " << second.ToString();
 
-first = -15.005_LN;
-second = 15.005_LN;
+first = -1.01_LN;
+second = 1.01_LN;
 ans = false;
-EXPECT_EQ(first > second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first > second, ans) << first.ToString() << " " << second.ToString();
 
-first = 15.005_LN;
-second = -15.005_LN;
+first = 1.01_LN;
+second = -1.01_LN;
 ans = true;
-EXPECT_EQ(first > second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = 15.00500001_LN;
-second = 15.005_LN;
-ans = true;
-EXPECT_EQ(first > second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = 15.005_LN;
-second = 15.00500001_LN;
-ans = false;
-EXPECT_EQ(first > second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
+EXPECT_EQ(first > second, ans) << first.ToString() << " " << second.ToString();
 }
 
-TEST(LogicOperationTest, Less) {
-LongNum first, second;
+TEST(LogicTest, Less) {
+LongNum first(nullptr), second(nullptr);
 bool ans;
-first = 15.005_LN;
-second = 15.005_LN;
+first = 1.01_LN;
+second = 1.01_LN;
 ans = false;
-EXPECT_EQ(first < second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first < second, ans) << first.ToString() << " " << second.ToString();
 
-first = 150.005_LN;
-second = 15.005_LN;
+first = 1.01001_LN;
+second = 1.01_LN;
 ans = false;
-EXPECT_EQ(first < second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first < second, ans) << first.ToString() << " " << second.ToString();
 
-first = -15.005_LN;
-second = 15.005_LN;
+first = -1.01_LN;
+second = 1.01_LN;
 ans = true;
-EXPECT_EQ(first < second, ans) << first.GetLongNum() << " " << second.GetLongNum();
+EXPECT_EQ(first < second, ans) << first.ToString() << " " << second.ToString();
 
-first = 15.005_LN;
-second = -15.005_LN;
+first = 1.01_LN;
+second = -1.01_LN;
 ans = false;
-EXPECT_EQ(first < second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = 15.00500001_LN;
-second = 15.005_LN;
-ans = false;
-EXPECT_EQ(first < second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
-first = 15.005_LN;
-second = 15.00500001_LN;
-ans = true;
-EXPECT_EQ(first < second, ans) << first.GetLongNum() << " " << second.GetLongNum();
-
+EXPECT_EQ(first < second, ans) << first.ToString() << " " << second.ToString();
 }
 
 TEST(PiCalc, More) {
-LongNum first = PiCalculation(100);
+LongNum first = PiCalc(100);
 std::string ans = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
-EXPECT_EQ(first.GetLongNum(), ans) << first.GetLongNum() << " " << ans;
+EXPECT_EQ(first.ToString(), ans) << first.ToString() << " " << ans;
 
 first = PiCalc(1);
 ans = "3.1";
-EXPECT_EQ(first.GetLongNum(), ans) << first.GetLongNum() << " " << ans;
+EXPECT_EQ(first.ToString(), ans) << first.ToString() << " " << ans;
 
 first = PiCalc(0);
 ans = "3";
-EXPECT_EQ(first.GetLongNum(), ans) << first.GetLongNum() << " " << ans;
+EXPECT_EQ(first.ToString(), ans) << first.ToString() << " " << ans;
 
 EXPECT_ANY_THROW(PiCalc(-1));
 

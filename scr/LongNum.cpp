@@ -1,11 +1,14 @@
-#include "../include/LongNum.h"
+#include "../includes/LongNum.h"
+#include <utility>
+#include <vector>
+#include <string>
 
 const int divDigits = 100;
 
-namespace LongNum {
+namespace MyLongNum {
     const LongNum Zero = LongNum("0");
 
-    LongNum::LongNum() {
+    LongNum::LongNum(const char *string) {
         sign = 1;
         precision = 0;
         number.push_back(0);
@@ -29,11 +32,11 @@ namespace LongNum {
     }
 
     LongNum::LongNum(std::vector<int> number, int len, int sign) {
-        sign = sign;
-        number = number;
+        this->sign = sign;
+        this->number = std::move(number);
         precision = len;
-        this -> NoZeroesEnd();
-        this -> NoZeroesBegin();
+        this->NoZeroesEnd();
+        this->NoZeroesBegin();
     }
 
     int LongNum::FindPrecision(const std::string &str) {
@@ -51,7 +54,6 @@ namespace LongNum {
         while(number.size() > precision + 1 && number.back() == 0) {
             number.pop_back();
         }
-        return;
     }
 
     void LongNum::NoZeroesEnd() {
@@ -59,7 +61,6 @@ namespace LongNum {
             number.erase(number.begin());
             precision--;
         }
-        return;
     }
 
     int LongNum::FirstNotZero() const {
@@ -114,7 +115,7 @@ namespace LongNum {
             second.push_back(0);
         }
 
-        LongNum res;
+        LongNum res(nullptr);
         res.number = std::vector<int>(size + 1, 0);
         for (size_t i = 0; i < size; i++) {
             res.number[i + 1] = first[i] + second[i];
@@ -157,7 +158,7 @@ namespace LongNum {
             second.push_back(0);
         }
 
-        LongNum res;
+        LongNum res(nullptr);
         res.sign = cmp ? 1 : -1;
         res.number = std::vector<int>(size + 1, 0);
 
@@ -180,7 +181,7 @@ namespace LongNum {
     LongNum LongNum::Mul(const LongNum &other) const {
         size_t len = number.size() + other.number.size();
 
-        LongNum res;
+        LongNum res(nullptr);
         res.number = std::vector<int>(len, 0);
         res.precision = precision + other.precision;
 
@@ -201,7 +202,7 @@ namespace LongNum {
 
     LongNum LongNum::Div(const LongNum &other) const {
         if (number.size() == 1 && number[0] == 0)
-            throw std::string("LongNum - division by zero!");
+            throw std::string ("LongNum - division by zero!");
 
         LongNum copy = *this;
         std::vector<int> ans;
@@ -266,7 +267,6 @@ namespace LongNum {
             number.erase(number.begin());
             precision -= 1;
         }
-        return;
     }
 
     LongNum LongNum::operator+(const LongNum &other) const {
@@ -289,6 +289,10 @@ namespace LongNum {
             return (Zero - other) - (Zero - *this);
         }
         return *this + (Zero - other);
+    }
+
+    LongNum LongNum::operator-() const {
+        return Zero - *this;
     }
 
     LongNum LongNum::operator*(const LongNum &other) const {

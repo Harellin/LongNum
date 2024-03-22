@@ -1,5 +1,5 @@
-#ifndef PROJECT1_LONGNUM_H
-#define PROJECT1_LONGNUM_Hiv
+#ifndef PROJECT1
+#define PROJECT1
 
 #include <vector>
 #include <iostream>
@@ -7,7 +7,7 @@
 #include <string>
 #include <exception>
 
-namespace LongNum{
+namespace MyLongNum{
 
     class LongNum{
     private:
@@ -19,7 +19,6 @@ namespace LongNum{
         void NoZeroesBegin();
         void NoZeroesEnd();
         int FirstNotZero() const;
-        std::string ToString() const;
 
         LongNum Sum(const LongNum &other) const;
         LongNum Diff(const LongNum &other) const;
@@ -27,14 +26,16 @@ namespace LongNum{
         LongNum Div(const LongNum &other) const;
 
     public:
-        LongNum();
-        explicit LongNum(std::string number);
+        LongNum(const char *string);
+        explicit LongNum(std::string);
         explicit LongNum(std::vector<int> longnum, int len, int sign);
 
         void Round(int precision);
+        std::string ToString() const;
 
         LongNum operator+(const LongNum &other) const;
         LongNum operator-(const LongNum &other) const;
+        LongNum operator-() const;
         LongNum operator*(const LongNum &other) const;
         LongNum operator/(const LongNum &other) const;
 
@@ -50,4 +51,4 @@ namespace LongNum{
     LongNum operator "" _LN(const char* str);
 }
 
-#endif //PROJECT1_LONGNUM_H
+#endif
