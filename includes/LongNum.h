@@ -18,15 +18,13 @@ namespace MyLongNum{
         static int FindPrecision(const std::string &str);
         void NoZeroesBegin();
         void NoZeroesEnd();
-        int FirstNotZero() const;
 
         LongNum Sum(const LongNum &other) const;
         LongNum Diff(const LongNum &other) const;
         LongNum Mul(const LongNum &other) const;
-        LongNum Div(const LongNum &other) const;
 
     public:
-        LongNum(const char *string);
+        explicit LongNum();
         explicit LongNum(std::string);
         explicit LongNum(std::vector<int> longnum, int len, int sign);
 
@@ -38,6 +36,7 @@ namespace MyLongNum{
         LongNum operator-() const;
         LongNum operator*(const LongNum &other) const;
         LongNum operator/(const LongNum &other) const;
+        LongNum Div(const LongNum &other, int cntsymbols) const;
 
         bool operator==(const LongNum &other) const;
         bool operator!=(const LongNum &other) const;
@@ -45,9 +44,9 @@ namespace MyLongNum{
         bool operator>=(const LongNum &other) const;
         bool operator<(const LongNum &other) const;
         bool operator<=(const LongNum &other) const;
+        friend std::ostream &operator<<(std::ostream &os, const LongNum &other);
     };
 
-    LongNum PiCalc(int precision);
     LongNum operator "" _LN(const char* str);
 }
 
