@@ -19,9 +19,12 @@ LongNum PiCalc(int precision) {
     LongNum const2 = 2_LN;
     LongNum const4 = 4_LN;
 
-    for(int i = 0; i < precision; i++) {
-        ans = ans + (i % 2 ? -const1 : const1) *
-                (const4 / (coef1 * (const2 * coefi + const1)) - const1 / (coef2 * (const2 * coefi + const1)));
+    for(int i = 0; i < precision; i += 2) {
+        ans = ans + const4 / (coef1 * (const2 * coefi + const1)) - const1 / (coef2 * (const2 * coefi + const1));
+        coefi = coefi + 1_LN;
+        coef1 = coef1 * coef1step2;
+        coef2 = coef2 * coef2step2;
+        ans = ans - const4 / (coef1 * (const2 * coefi + const1)) - const1 / (coef2 * (const2 * coefi + const1));
         coefi = coefi + 1_LN;
         coef1 = coef1 * coef1step2;
         coef2 = coef2 * coef2step2;

@@ -36,6 +36,10 @@ namespace MyLongNum{
         LongNum operator-() const;
         LongNum operator*(const LongNum &other) const;
         LongNum operator/(const LongNum &other) const;
+        LongNum operator+=(const LongNum &other);
+        LongNum operator-=(const LongNum &other);
+        LongNum operator*=(const LongNum &other);
+        LongNum operator/=(const LongNum &other);
         LongNum Div(const LongNum &other, int cntsymbols) const;
 
         bool operator==(const LongNum &other) const;

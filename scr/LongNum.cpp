@@ -232,14 +232,20 @@ namespace MyLongNum {
         LongNum res;
         res.sign = sign * other.sign;
         res.precision = 0;
-        int explen = (number.size() - precision) - (other.number.size() - other.precision);
-        while (divided.number.size() - divided.precision < divider.number.size() - divider.precision) {
-            divided.number.push_back(0);
-            res.number.push_back(0);
-            res.precision++;
+        int diff = precision - other.precision;
+        if(diff > 0) {
+            res.precision += diff;
         }
+        divided.precision = 0;
+        divider.precision = 0;
+        divided.NoZeroesBegin();
+        divider.NoZeroesBegin();
 
-        while (res.number.size() - explen < Precision && divided != 0_LN) {
+        bool fl = divided != 0_LN;
+        bool firsttime = true;
+        int explen = divided.number.size() - divider.number.size();
+        int cnt = res.number.size() - explen;
+        while (cnt < Precision && fl) {
             int cur = 0;
             while(divided >= divider) {
                 cur++;
@@ -247,13 +253,26 @@ namespace MyLongNum {
             }
             res.number.push_back(cur);
             if(divided != 0_LN) {
-                if (divided.precision != 0) {
-                    divided.precision--;
+                divided.number.push_back(0);
+                if(firsttime) {
+                    firsttime = false;
                 } else {
-                    divided.number.push_back(0);
                     res.precision++;
                 }
             }
+            divided.NoZeroesEnd();
+            divided.NoZeroesBegin();
+            fl = divided != 0_LN;
+            cnt = res.number.size() - explen;
+        }
+
+        if(diff < 0) {
+            for (int i = 0; i < -diff; i++) {
+                res.number.push_back(0);
+            }
+        }
+        while(res.number.size() <= res.precision) {
+            res.number.insert(res.number.begin(), 0);
         }
         res.NoZeroesEnd();
         res.NoZeroesBegin();
@@ -293,11 +312,8 @@ namespace MyLongNum {
         if(sign == -1 && other.sign == -1) {
             return other.Diff(*this);
         }
-        if(sign == 1 && other.sign == -1) {
-            return this->Sum(other);
-        }
         LongNum res = this->Sum(other);
-        res.sign = -1;
+        res.sign = sign;
         return res;
     }
 
@@ -335,51 +351,31 @@ namespace MyLongNum {
     }
 
     bool LongNum::operator<(const LongNum &other) const {
-        if (*this == other) return false;
-
-        if (sign < other.sign) {
-            return true;
-        } else if (sign > other.sign) {
+        if (*this == other) {
             return false;
         }
-
-        if (number.size() - precision > other.number.size() - other.precision) {
-            return false;
+        if (sign != other.sign) {
+            return sign < other.sign;
         }
-        if (number.size() - precision < other.number.size() - other.precision) {
-            return true;
+        if(sign == -1) {
+            return -*this > -other;
+        }
+
+        if (number.size() - precision != other.number.size() - other.precision) {
+            return number.size() - precision < other.number.size() - other.precision;
         }
 
         bool ans = true;
-        int i, j;
-        for (i = 0, j = 0; i < number.size() && j < other.number.size(); i++, j++) {
-            if (number[i] < other.number[j]) {
-                if(sign == 1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            if (number[i] > other.number[j]) {
-                if(sign == 1) {
-                    return false;
-                } else {
-                    return true;
-                }
+        int i;
+        for (i = 0; i < number.size() && i < other.number.size(); i++) {
+            if (number[i] != other.number[i]) {
+                return number[i] < other.number[i];
             }
         }
         if (i != number.size()) {
-            if(sign == 1) {
-                return false;
-            } else {
-                return true;
-            }
+            return false;
         } else {
-            if(sign == 1) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         }
     }
 
