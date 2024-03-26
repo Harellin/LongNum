@@ -12,21 +12,19 @@ namespace MyLongNum{
     class LongNum{
     private:
         std::vector<int> number;
-        int precision;
+        int exponent;
         int sign;
 
-        static int FindPrecision(const std::string &str);
-        void NoZeroesBegin();
-        void NoZeroesEnd();
+        void NoZeroes();
 
         LongNum Sum(const LongNum &other) const;
         LongNum Diff(const LongNum &other) const;
         LongNum Mul(const LongNum &other) const;
+        LongNum Div(const LongNum &other) const;
 
     public:
         explicit LongNum();
         explicit LongNum(std::string);
-        explicit LongNum(std::vector<int> longnum, int len, int sign);
 
         void Round(int precision);
         std::string ToString() const;
@@ -40,7 +38,6 @@ namespace MyLongNum{
         LongNum operator-=(const LongNum &other);
         LongNum operator*=(const LongNum &other);
         LongNum operator/=(const LongNum &other);
-        LongNum Div(const LongNum &other, int cntsymbols) const;
 
         bool operator==(const LongNum &other) const;
         bool operator!=(const LongNum &other) const;

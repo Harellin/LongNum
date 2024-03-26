@@ -1,345 +1,298 @@
 #include "../includes/LongNum.h"
-#include <utility>
 #include <vector>
 #include <string>
 
 const int divDigits = 100;
 
 namespace MyLongNum {
-    const LongNum Zero = LongNum("0");
-
     LongNum::LongNum() {
         sign = 1;
-        precision = 0;
+        number = std::vector<int>(1, 0);
+        exponent = 1;
     }
 
     LongNum::LongNum(std::string number) {
-        if(number[0] == '-') {
-            sign = -1;
-            number.erase(number.begin());
-        } else {
-            sign = 1;
-        }
+        int index = (number[0] == '-') ? 1 : 0;
+        sign = (number[0] == '-') ? -1 : 1;
+        exponent = number.length() - index;
 
-        precision = FindPrecision(number);
-
-        for(int i = 0; i < number.size(); i++) {
-            if(number[i] != '.') {
-                this->number.push_back(number[i] - '0');
+        while (index < number.length()) {
+            if (number[index] == '.') {
+                exponent = sign == 1 ? index : index - 1;
+            } else {
+                this->number.push_back(number[index] - '0');
             }
+            index++;
         }
-        this->NoZeroesBegin();
-        this->NoZeroesEnd();
+        this->NoZeroes();
     }
 
-    LongNum::LongNum(std::vector<int> number, int len, int sign) {
-        this->sign = sign;
-        this->number = std::move(number);
-        precision = len;
-        this->NoZeroesEnd();
-        this->NoZeroesBegin();
-    }
-
-    int LongNum::FindPrecision(const std::string &str) {
-        int ans = 0;
-        int fl = 0;
-        for(int i = str.size() - 1; i >= 0; i--) {
-            if(str[i] == '.') {
-                fl = 1;
-                break;
-            }
-            ans++;
+    void LongNum::NoZeroes() {
+        int n = std::max(1, exponent);
+        while (number.size() > n && number[number.size() - 1] == 0) {
+            number.erase(number.end() - 1);
         }
-        if(fl) {
-            return ans;
-        } else {
-            return 0;
-        }
-    }
-
-    void LongNum::NoZeroesBegin() {
-        while(number.size() > precision && *number.begin() == 0) {
+        while (number.size() > 1 && number[0] == 0) {
             number.erase(number.begin());
+            exponent--;
         }
-        if(number.size() - precision == 0) {
-            number.insert(number.begin(), 0);
+        while (number.size() > 1 && number[number.size() - 1] == 0) {
+            number.erase(number.end() - 1);
+        }
+        if (number.size() == 1 && number[0] == 0) {
+            exponent = 1;
             sign = 1;
-        }
-    }
-
-    void LongNum::NoZeroesEnd() {
-        while (number.size() > 0 && precision > 0 && number.back() == 0) {
-            number.pop_back();
-            precision--;
         }
     }
 
     std::string LongNum::ToString() const {
         std::string ans;
-        int i = 0;
-        if(sign == -1) {
-            ans += "-";
-            i++;
+        if (sign == -1) {
+            ans += '-';
         }
 
-        for(; i < number.size(); i++) {
-            if(precision == number.size() - i) {
-                ans += ".";
+        if (exponent > 0) {
+            int i = 0;
+            while(i < number.size() && i < exponent) {
+                ans += number[i++] + '0';
             }
-            ans += ('0' + number[i]);
+            while (i < exponent){
+                ans += '0';
+                i++;
+            }
+            if (i < number.size()) {
+                ans += '.';
+                while(i < number.size()) {
+                    ans += number[i++] + '0';
+                }
+            }
+        }
+        else {
+           ans += "0.";
+            for (long i = 0; i < -exponent; i++) {
+                ans += "0";
+            }
+            for (int i = 0; i < number.size(); i++) {
+                ans += number[i++] + '0';
+            }
         }
         return ans;
     }
 
     LongNum LongNum::Sum(const LongNum &other) const {
-        int maxprec = std::max(precision, other.precision);
-        std::vector<int> first = number;
-        std::vector<int> second = other.number;
-        int precfirst = precision, precsecond = other.precision;
-
-        while(precfirst < maxprec) {
-            precfirst++;
-            first.push_back(0);
-        }
-        while(precsecond < maxprec) {
-            precsecond++;
-            second.push_back(0);
-        }
-
-        int maxlen = std::max(first.size() - precfirst, second.size() - precsecond);
-        while(first.size() - precfirst < maxlen) {
+        int exp = std::max(exponent, other.exponent);
+        std::vector<int> first(number);
+        std::vector<int> second(other.number);
+        for(int i = exponent; i < exp; i++) {
             first.insert(first.begin(), 0);
         }
-        while(second.size() - precsecond < maxlen) {
-            second.insert(second.begin(), 0);
-        }
-
-        std::vector<int> ans(std::max(first.size(), second.size()));
-        for(int i = ans.size() - 1; i >= 0; i--) {
-            if(second.size() > i && first.size() > i) {
-                ans[i] = second[i] + first[i];
-            } else if(second.size() > i) {
-                ans[i] = second[i];
-            } else if(first.size() > i) {
-                ans[i] = first[i];
-            }
-        }
-
-        for(int i = ans.size() - 2; i >= 0; i--) {
-            ans[i] += (ans[i + 1] / 10);
-            ans[i + 1] %= 10;
-        }
-        if(ans[0] > 9) {
-            ans.insert(ans.begin(), 1);
-            ans[1] %= 10;
-        }
-        LongNum res(ans, maxprec, 1);
-        res.NoZeroesBegin();
-        res.NoZeroesEnd();
-        return res;
-    }
-
-    LongNum LongNum::Diff(const LongNum &other) const {
-        if(*this == 0_LN) {
-            LongNum res = other;
-            res.sign = res.sign * (-1);
-            return res;
-        }
-        LongNum htis = *this, hother = other;
-        htis.sign = 1; hother.sign = 1;
-        bool cmp = htis > hother; //теперь 1 число будет обозначено за большее, 2 за меньшее
-
-        long prec1 = cmp ? precision : other.precision;
-        long prec2 = cmp ? other.precision : precision;
-        long prec = std::max(prec1, prec2);
-
-        std::vector<int> first = cmp ? number : other.number;
-        std::vector<int> second = cmp ? other.number : number;
-
-        while (prec1 != prec) {
-            first.push_back(0);
-            prec1++;
-        }
-        while (prec2 != prec) {
-            second.push_back(0);
-            prec2++;
-        }
-
-        int maxlen = std::max(first.size() - prec1, second.size() - prec2);
-        while(first.size() - prec1 < maxlen) {
-            first.insert(first.begin(), 0);
-        }
-        while(second.size() - prec2 < maxlen) {
+        for(int i = other.exponent; i < exp; i++) {
             second.insert(second.begin(), 0);
         }
 
         int size = std::max(first.size(), second.size());
-        std::vector<int> ans(size);
-        for (int i = size - 1; i >= 0; i--) {
-            if(second.size() > i && first.size() > i) {
-                ans[i] = first[i] - second[i];
-            } else if(second.size() > i) {
-                ans[i] = second[i];
-            } else if(first.size() > i) {
-                ans[i] = first[i];
-            }
+        while (first.size() != size) {
+            first.push_back(0);
         }
-        for (int i = size - 1; i > 0; i--) {
-            if (ans[i] < 0) {
-                ans[i] += 10;
-                ans[i - 1]--;
-            }
+        while (second.size() != size) {
+            second.push_back(0);
         }
 
-        LongNum res(ans, prec, cmp ? 1 : -1);
-        res.NoZeroesEnd();
-        res.NoZeroesBegin();
+        LongNum res;
+        res.sign = sign;
+        res.number = std::vector<int>(size + 1, 0);
+        for (int i = 0; i < size; i++) {
+            res.number[i + 1] = first[i] + second[i];
+        }
+        for (int i = size; i > 0; i--) {
+            res.number[i - 1] += res.number[i] / 10;
+            res.number[i] %= 10;
+        }
+        res.exponent = exp + 1;
+        res.NoZeroes();
+        return res;
+    }
+
+    LongNum LongNum::Diff(const LongNum &other) const {
+        bool cmp = *this > other;
+        long exp = std::max(exponent, other.exponent);
+        std::vector<int> first(cmp ? number : other.number);
+        std::vector<int> second(cmp ? other.number : number);
+        for(int i = cmp ? exponent : other.exponent; i < exp; i++) {
+            first.insert(first.begin(), 0);
+        }
+        for(int i = cmp ? other.exponent : exponent; i < exp; i++) {
+            second.insert(second.begin(), 0);
+        }
+
+        int size = std::max(first.size(), second.size());
+        while (first.size() != size) {
+            first.push_back(0);
+        }
+        while (second.size() != size) {
+            second.push_back(0);
+        }
+
+        LongNum res;
+        res.sign = cmp ? 1 : -1;
+        res.number = std::vector<int>(size + 1, 0);
+        for (int i = 0; i < size; i++) {
+            res.number[i + 1] = first[i] - second[i];
+        }
+        for (int i = size; i > 0; i--) {
+            if (res.number[i] < 0) {
+                res.number[i] += 10;
+                res.number[i - 1]--;
+            }
+        }
+        res.exponent = exp + 1;
+        res.NoZeroes();
         return res;
     }
 
     LongNum LongNum::Mul(const LongNum &other) const {
-        size_t len = number.size() + other.number.size();
-
+        int size = number.size() + other.number.size();
         LongNum res;
-        res.number = std::vector<int>(len, 0);
-        res.precision = precision + other.precision;
-
-        for (size_t i = 0; i < number.size(); i++) {
-            for (size_t j = 0; j < other.number.size(); j++) {
+        res.sign = sign * other.sign;
+        res.number = std::vector<int>(size, 0);
+        res.exponent = exponent + other.exponent;
+        for (int i = 0; i < number.size(); i++) {
+            for (int j = 0; j < other.number.size(); j++) {
                 res.number[i + j + 1] += number[i] * other.number[j];
             }
         }
-        for (size_t i = len - 1; i > 0; i--) {
+        for (int i = size - 1; i > 0; i--) {
             res.number[i - 1] += res.number[i] / 10;
             res.number[i] %= 10;
         }
-
-        res.NoZeroesBegin();
-        res.NoZeroesEnd();
+        res.NoZeroes();
         return res;
     }
 
-    LongNum LongNum::Div(const LongNum &other, int cntsymbols) const {
-        if (other == 0_LN) {
-            throw "DivisionByZero";
-        }
+    LongNum LongNum::Div(const LongNum &other) const {
+        if (other.number.size() == 1 && other.number[0] == 0)
+            throw "LongDouble LongDouble::inverse() - division by zero!";
 
-        const int Precision = 100;
-        LongNum divided = *this;
-        divided.sign = 1;
-        LongNum divider = other;
+        LongNum divider(other);
         divider.sign = 1;
-        LongNum res;
-        res.sign = sign * other.sign;
-        res.precision = 0;
-        int diff = precision - other.precision;
-        if(diff > 0) {
-            res.precision += diff;
+        LongNum divided = 1_LN;
+        LongNum otherinverse;
+        otherinverse.sign = other.sign;
+        otherinverse.exponent = 1;
+        otherinverse.number = std::vector<int>();
+        while (divider < 1_LN) {
+            divider.exponent++;
+            otherinverse.exponent++;
         }
-        divided.precision = 0;
-        divider.precision = 0;
-        divided.NoZeroesBegin();
-        divider.NoZeroesBegin();
+        while (divided < divider) {
+            divided.exponent++;
+        }
+        otherinverse.exponent -= divided.exponent - 1;
 
-        bool fl = divided != 0_LN;
-        bool firsttime = true;
-        int explen = divided.number.size() - divider.number.size();
-        int cnt = res.number.size() - explen;
-        while (cnt < Precision && fl) {
+        int tmp = 0;
+        int maxtmp = divDigits + std::max(0, otherinverse.exponent);
+        do {
             int cur = 0;
-            while(divided >= divider) {
+            while (divided >= divider) {
                 cur++;
                 divided = divided - divider;
             }
-            res.number.push_back(cur);
-            if(divided != 0_LN) {
-                divided.number.push_back(0);
-                if(firsttime) {
-                    firsttime = false;
+            divided.exponent++;
+            divided.NoZeroes();
+            otherinverse.number.push_back(cur);
+            tmp++;
+        } while (divided != 0_LN && tmp < maxtmp);
+
+        LongNum ans =  *this * otherinverse;
+        int i = ans.number.size() - std::max(0, exponent) - 1;
+        int n = std::max( 0, ans.exponent);
+        if (i > n && ans.number[i] == 9) {
+            while (i > n && ans.number[i] == 9) {
+                i--;
+            }
+            if (ans.number[i] == 9) {
+                ans.number.erase(ans.number.begin() + n, ans.number.end());
+                if(ans.sign == 1) {
+                    ans += 1_LN;
                 } else {
-                    res.precision++;
+                    ans -= 1_LN;
                 }
             }
-            divided.NoZeroesEnd();
-            divided.NoZeroesBegin();
-            fl = divided != 0_LN;
-            cnt = res.number.size() - explen;
-        }
-
-        if(diff < 0) {
-            for (int i = 0; i < -diff; i++) {
-                res.number.push_back(0);
+            else {
+                ans.number.erase(ans.number.begin() + i + 1, ans.number.end());
+                ans.number[i]++;
             }
         }
-        while(res.number.size() <= res.precision) {
-            res.number.insert(res.number.begin(), 0);
-        }
-        res.NoZeroesEnd();
-        res.NoZeroesBegin();
-        return res;
+        return ans;
     }
 
     void LongNum::Round(int cnt) {
         if (cnt < 0) {
             return;
         }
-        if (precision <= cnt) {
-            return;
-        }
-
-        while (precision > cnt) {
+        while (number.size() - exponent > cnt) {
             number.pop_back();
-            precision--;
         }
     }
 
     LongNum LongNum::operator+(const LongNum &other) const {
         if(sign == other.sign) {
-            LongNum ans = this->Sum(other);
-            ans.sign = sign;
-            return ans;
+            return Sum(other);
         }
-        if(sign == -1) {
-            return other.Diff(*this);
+        if (sign == -1) {
+            return other - (-(*this));
         }
-        return this->Diff(other);
+        return *this - (-other);
+    }
+
+    LongNum LongNum::operator+=(const MyLongNum::LongNum &other) {
+        return *this = *this + other;
     }
 
     LongNum LongNum::operator-(const LongNum &other) const {
-        if(sign == 1 && other.sign == 1) {
-            return this->Diff(other);
+        if (sign == 1 && other.sign == 1) {
+            return Diff(other);
         }
-        if(sign == -1 && other.sign == -1) {
-            return other.Diff(*this);
-        }
-        LongNum res = this->Sum(other);
-        res.sign = sign;
-        return res;
+        if (sign == -1 && other.sign == -1)
+            return (-other) - (-(*this));
+
+        return *this + (-other);
     }
 
     LongNum LongNum::operator-() const {
-        return Zero.Diff(*this);
+        LongNum res;
+        res.sign = -sign;
+        res.exponent = exponent;
+        res.number = std::vector<int>(number);
+        return res;
+    }
+
+    LongNum LongNum::operator-=(const MyLongNum::LongNum &other) {
+        return *this = *this - other;
     }
 
     LongNum LongNum::operator*(const LongNum &other) const {
-        LongNum ans = this->Mul(other);
-        ans.sign = sign * other.sign;
-        return ans;
+        return Mul(other);
+    }
+
+    LongNum LongNum::operator*=(const MyLongNum::LongNum &other) {
+        return *this = *this * other;
     }
 
     LongNum LongNum::operator/(const LongNum &other) const {
-        return this->Div(other, std::max(this->precision, other.precision));
+        return Div(other);
+    }
+
+    LongNum LongNum::operator/=(const MyLongNum::LongNum &other) {
+        return *this = *this / other;
     }
 
     bool LongNum::operator==(const LongNum &other) const {
-        LongNum first = *this, second = other;
-        first.NoZeroesBegin(); first.NoZeroesEnd();
-        second.NoZeroesBegin(); second.NoZeroesEnd();
-        if (first.sign != second.sign || first.precision != second.precision || first.number.size() != second.number.size()) {
+        if (sign != other.sign || exponent != other.exponent || number.size() != other.number.size()) {
             return false;
         }
-        for(int i = 0; i < first.number.size(); i++) {
-            if(first.number[i] != second.number[i]) {
+        for (int i = 0; i < number.size(); i++) {
+            if (number[i] != other.number[i]) {
                 return false;
             }
         }
@@ -350,45 +303,42 @@ namespace MyLongNum {
         return !(*this == other);
     }
 
-    bool LongNum::operator<(const LongNum &other) const {
-        if (*this == other) {
-            return false;
-        }
+    bool LongNum::operator>(const LongNum &other) const {
         if (sign != other.sign) {
-            return sign < other.sign;
+            return sign > other.sign;
         }
-        if(sign == -1) {
-            return -*this > -other;
-        }
-
-        if (number.size() - precision != other.number.size() - other.precision) {
-            return number.size() - precision < other.number.size() - other.precision;
+        if (exponent != other.exponent) {
+            return (exponent > other.exponent) ^ (sign == -1);
         }
 
-        bool ans = true;
-        int i;
-        for (i = 0; i < number.size() && i < other.number.size(); i++) {
-            if (number[i] != other.number[i]) {
-                return number[i] < other.number[i];
+        std::vector<int> first(number);
+        std::vector<int> second(other.number);
+        int size = std::max(first.size(), second.size());
+        while (first.size() != size) {
+            first.push_back(0);
+        }
+        while (second.size() != size) {
+            second.push_back(0);
+        }
+
+        for (int i = 0; i < size; i++) {
+            if (first[i] != second[i]) {
+                return (first[i] > second[i]) ^ (sign == -1);
             }
         }
-        if (i != number.size()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    bool LongNum::operator<=(const LongNum &other) const {
-        return *this == other || *this < other;
-    }
-
-    bool LongNum::operator>(const LongNum &other) const {
-        return !(*this <= other);
+        return false;
     }
 
     bool LongNum::operator>=(const LongNum &other) const {
-        return !(*this < other);
+        return *this == other || *this > other;
+    }
+
+    bool LongNum::operator<(const LongNum &other) const {
+        return !(*this >= other);
+    }
+
+    bool LongNum::operator<=(const LongNum &other) const {
+        return !(*this > other);
     }
 
     std::ostream &operator<<(std::ostream &os, const LongNum &other) {
